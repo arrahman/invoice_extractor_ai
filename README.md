@@ -1,0 +1,112 @@
+# Invoice AI Processor
+
+An LLM-based invoice processing backend built with Python, FastAPI, and OpenAI APIs. It accepts invoice PDFs and images, extracts structured fields, runs business validation rules, and returns a category plus confidence-driven review flags.
+
+## What this project does
+
+1. Accepts an invoice file upload through a FastAPI endpoint.
+2. Sends the file to OpenAI for multimodal extraction.
+3. Forces the model output into a typed invoice schema.
+4. Validates totals, dates, and required fields in Python.
+5. Returns a clean JSON payload that a frontend or ERP integration can consume.
+
+## Project structure
+
+```text
+app/
+  main.py
+  config.py
+  schemas.py
+  services/
+    invoice_service.py
+    openai_invoice_extractor.py
+```
+
+## Step-by-step build
+
+### Step 1: Create a virtual environment
+
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+```
+
+### Step 2: Install dependencies
+
+```powershell
+pip install -e .
+```
+
+### Step 3: Configure environment variables
+
+Copy `.env.example` to `.env` and set your API key:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Required values:
+
+- `OPENAI_API_KEY`
+- `OPENAI_MODEL` such as `gpt-5.4-mini` or `gpt-5.4`
+
+OpenAI docs I aligned this with:
+
+- [Models](https://developers.openai.com/api/docs/models)
+- [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs)
+- [File inputs](https://platform.openai.com/docs/guides/pdf-files)
+
+### Step 4: Run the API
+
+```powershell
+uvicorn app.main:app --reload
+```
+
+The API will start at `http://127.0.0.1:8000`.
+
+### Step 5: Test the health endpoint
+
+```powershell
+curl http://127.0.0.1:8000/health
+```
+
+### Step 6: Process an invoice
+
+```powershell
+curl -X POST "http://127.0.0.1:8000/api/v1/invoices/process" `
+  -F "file=@C:\path\to\invoice.pdf"
+```
+
+## Example response
+
+```json
+{
+  "filename": "invoice.pdf",
+  "document_type": "invoice",
+  "vendor_name": "Acme Supplies",
+  "invoice_number": "INV-1042",
+  "invoice_date": "2026-04-01",
+  "due_date": "2026-04-30",
+  "currency": "USD",
+  "subtotal": 1200.0,
+  "tax": 96.0,
+  "total": 1296.0,
+  "category": "office_supplies",
+  "requires_human_review": false,
+  "validation_issues": []
+}
+```
+
+## Business rules included
+
+- Missing vendor, invoice number, invoice date, or total triggers review.
+- A mismatch between `subtotal + tax` and `total` triggers review.
+- A due date earlier than the invoice date triggers review.
+- Low extraction confidence triggers review.
+
+## Next improvements
+
+- Add invoice deduplication using invoice number and vendor matching.
+- Persist results to Postgres.
+- Add authentication and audit logs.
+- Push approved invoices to ERP or accounting systems.
