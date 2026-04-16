@@ -1,0 +1,12 @@
+.env
+.git
+.github
+.pytest_cache
+.venv
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+tests/
+invoice_ai_processor.egg-info/
+pytest-cache-files-*

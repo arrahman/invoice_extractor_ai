@@ -1,3 +1,20 @@
+Metadata-Version: 2.4
+Name: invoice-ai-processor
+Version: 0.1.0
+Summary: LLM-based invoice processing backend using Python, FastAPI, and OpenAI APIs.
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: fastapi>=0.115.0
+Requires-Dist: openai>=2.0.0
+Requires-Dist: pydantic-settings>=2.5.0
+Requires-Dist: python-multipart>=0.0.9
+Requires-Dist: uvicorn[standard]>=0.30.0
+Provides-Extra: test
+Requires-Dist: httpx>=0.27.0; extra == "test"
+Requires-Dist: pytest>=8.3.0; extra == "test"
+Dynamic: license-file
+
 # Invoice AI Processor
 
 An LLM-based invoice processing backend built with Python, FastAPI, and OpenAI APIs. It accepts invoice PDFs and images, extracts structured fields, runs business validation rules, and returns a category plus confidence-driven review flags.
@@ -124,24 +141,3 @@ pytest
 - Persist results to Postgres.
 - Add authentication and audit logs.
 - Push approved invoices to ERP or accounting systems.
-
-## CI/CD
-
-This project now includes a GitHub Actions workflow at [.github/workflows/ci-cd.yml](C:/Users/16475/Documents/New%20project/.github/workflows/ci-cd.yml).
-
-What it does:
-
-- Runs the test suite on every pull request.
-- Runs the test suite on pushes to `main` or `master`.
-- Builds and publishes a Docker image to GitHub Container Registry on pushes to `main` or `master`.
-
-Container details:
-
-- Docker build file: [Dockerfile](C:/Users/16475/Documents/New%20project/Dockerfile)
-- Registry target: `ghcr.io/<owner>/<repo>`
-
-GitHub setup notes:
-
-- Make sure GitHub Actions is enabled for the repository.
-- If you publish to GHCR, the repository or organization needs package write access for `GITHUB_TOKEN`.
-- If you want deployment to a server, cloud app, or Kubernetes cluster, add the target credentials as GitHub Secrets and extend the publish job with a deploy step.
